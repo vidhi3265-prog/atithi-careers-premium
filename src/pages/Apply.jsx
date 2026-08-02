@@ -216,10 +216,20 @@ export default function Apply() {
     } catch (submissionError) {
       console.error(submissionError);
 
-      setError(
-        submissionError.message ||
-          'Something went wrong. Please try again.',
-      );
+      if (
+        submissionError.code === '23505' ||
+        submissionError.message?.includes('applications_phone_unique') ||
+        submissionError.message?.toLowerCase().includes('duplicate key')
+      ) {
+        setError(
+          'An application has already been submitted using this phone number.',
+        );
+      } else {
+        setError(
+          submissionError.message ||
+            'Something went wrong. Please try again.',
+        );
+      }
     } finally {
       setSubmitting(false);
     }
