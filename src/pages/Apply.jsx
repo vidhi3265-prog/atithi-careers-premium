@@ -1,6 +1,4 @@
-import React from 'react';
-
-import { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   CheckCircle2,
@@ -51,10 +49,21 @@ function normalizeCanadianPhone(value) {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
+function getTodayDate() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
 export default function Apply() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const fileRef = useRef(null);
+
+  const today = getTodayDate();
 
   const [form, setForm] = useState({
     ...initial,
@@ -114,6 +123,13 @@ export default function Apply() {
       return 'Only Canadian Citizens and Permanent Residents can submit this application.';
     }
 
+    if (
+      form.available_from &&
+      form.available_from < today
+    ) {
+      return 'Available start date cannot be in the past.';
+    }
+
     if (!resume) {
       return 'Please upload your resume.';
     }
@@ -154,7 +170,8 @@ export default function Apply() {
         '-',
       );
 
-      const uploadedPath = `${crypto.randomUUID()}/${Date.now()}-${safeName}`;
+      const uploadedPath =
+        `${crypto.randomUUID()}/${Date.now()}-${safeName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('resumes')
@@ -221,13 +238,17 @@ export default function Apply() {
 
       <section className="apply-shell">
         <aside className="apply-side">
-          <span className="eyebrow">ATITHI CAREERS</span>
+          <span className="eyebrow">
+            ATITHI CAREERS
+          </span>
 
-          <h1>Apply in a few simple steps.</h1>
+          <h1>
+            Apply in a few simple steps.
+          </h1>
 
           <p>
-            Your information and resume are securely submitted to the
-            owner for review.
+            Your information and resume are securely submitted
+            to the owner for review.
           </p>
 
           <div className="side-points">
@@ -272,6 +293,7 @@ export default function Apply() {
               <span>Full name *</span>
 
               <input
+                type="text"
                 name="full_name"
                 value={form.full_name}
                 onChange={update}
@@ -318,6 +340,7 @@ export default function Apply() {
               <span>Current city *</span>
 
               <input
+                type="text"
                 name="city"
                 value={form.city}
                 onChange={update}
@@ -336,7 +359,9 @@ export default function Apply() {
                 onChange={update}
                 disabled={submitting}
               >
-                <option value="">Select position</option>
+                <option value="">
+                  Select position
+                </option>
 
                 {positions.map((position) => (
                   <option
@@ -372,13 +397,16 @@ export default function Apply() {
                 name="available_from"
                 value={form.available_from}
                 onChange={update}
+                min={today}
                 disabled={submitting}
               />
             </label>
           </div>
 
           <fieldset className="status-options">
-            <legend>Work status in Canada *</legend>
+            <legend>
+              Work status in Canada *
+            </legend>
 
             <label
               className={
@@ -391,13 +419,17 @@ export default function Apply() {
                 type="radio"
                 name="work_status"
                 value="citizen"
-                checked={form.work_status === 'citizen'}
+                checked={
+                  form.work_status === 'citizen'
+                }
                 onChange={update}
                 disabled={submitting}
               />
 
               <span>
-                <strong>Canadian Citizen</strong>
+                <strong>
+                  Canadian Citizen
+                </strong>
               </span>
             </label>
 
@@ -412,13 +444,17 @@ export default function Apply() {
                 type="radio"
                 name="work_status"
                 value="pr"
-                checked={form.work_status === 'pr'}
+                checked={
+                  form.work_status === 'pr'
+                }
                 onChange={update}
                 disabled={submitting}
               />
 
               <span>
-                <strong>Permanent Resident (PR)</strong>
+                <strong>
+                  Permanent Resident (PR)
+                </strong>
               </span>
             </label>
 
@@ -433,28 +469,30 @@ export default function Apply() {
                 type="radio"
                 name="work_status"
                 value="other"
-                checked={form.work_status === 'other'}
+                checked={
+                  form.work_status === 'other'
+                }
                 onChange={update}
                 disabled={submitting}
               />
 
               <span>
-                <strong> Other  </strong>
+                <strong>Other</strong>
               </span>
             </label>
-
-            
           </fieldset>
 
           {form.work_status === 'other' && (
             <div className="eligibility-warning">
-              This hiring campaign currently accepts only Canadian
-              Citizens and Permanent Residents.
+              This hiring campaign currently accepts only
+              Canadian Citizens and Permanent Residents.
             </div>
           )}
 
           <label className="field full">
-            <span>Short message (optional)</span>
+            <span>
+              Short message (optional)
+            </span>
 
             <textarea
               name="message"
@@ -470,7 +508,9 @@ export default function Apply() {
             className={`upload-box ${
               resume ? 'has-file' : ''
             }`}
-            onClick={() => fileRef.current?.click()}
+            onClick={() =>
+              fileRef.current?.click()
+            }
             onKeyDown={handleUploadKeyDown}
             role="button"
             tabIndex="0"
@@ -513,8 +553,9 @@ export default function Apply() {
             />
 
             <span>
-              I confirm that the information provided is correct and I
-              agree that Atithi may contact me about this application.
+              I confirm that the information provided is
+              correct and I agree that Atithi may contact me
+              about this application.
             </span>
           </label>
 
