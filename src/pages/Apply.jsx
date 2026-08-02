@@ -398,7 +398,6 @@ export default function Apply() {
 
               <span>
                 <strong>Canadian Citizen</strong>
-                <small>Eligible to submit</small>
               </span>
             </label>
 
@@ -420,7 +419,6 @@ export default function Apply() {
 
               <span>
                 <strong>Permanent Resident (PR)</strong>
-                <small>Eligible to submit</small>
               </span>
             </label>
 
@@ -441,10 +439,11 @@ export default function Apply() {
               />
 
               <span>
-                <strong>Other status</strong>
-                <small>Not eligible for this opening</small>
+                <strong> Other  </strong>
               </span>
             </label>
+
+            
           </fieldset>
 
           {form.work_status === 'other' && (
